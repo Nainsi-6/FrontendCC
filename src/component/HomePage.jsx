@@ -4240,7 +4240,7 @@ const HomePage = () => {
         <h3 className="text-xl font-bold text-purple-900">🏆 Achievements</h3>
        {user && (
   <button
-    onClick={() => openModal("announcement")}
+    onClick={() => openModal("achievement")}
     className="text-sm font-semibold text-white px-4 py-2 rounded-md 
                bg-gradient-to-r from-indigo-600 to-purple-600 
                hover:from-indigo-700 hover:to-purple-700 
