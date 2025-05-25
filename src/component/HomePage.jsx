@@ -4447,14 +4447,14 @@ const HomePage = () => {
           )}
         </div>
 
-        {/* Right Sidebar */}
-        <div className="hidden md:block md:col-span-1">
-          <div className="sticky top-20 self-start max-h-screen  mb-6 z-10">
-            <div >
-                <ProfileSection />
-            </div>
-           
-             {/* Scrollable inner content */}
+       {/* Right Sidebar */}
+<div className="hidden md:block md:col-span-1 p-6">
+  <div className="fixed top-20 right-4 w-[calc(28%-4rem)] max-h-screen mb-6 z-10">
+    <div>
+      <ProfileSection />
+    </div>
+   
+    {/* Scrollable inner content */}
     <div className="mt-4 max-h-[60vh] overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-indigo-400 scrollbar-track-indigo-100">
       
       {user && (
@@ -4474,9 +4474,8 @@ const HomePage = () => {
       </div>
 
     </div>
-           
-          </div>
-        </div>
+  </div>
+</div>
       </div>
 
       {/* Modals */}
