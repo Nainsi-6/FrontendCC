@@ -554,7 +554,7 @@ const ProfileView = () => {
     action: false,
   })
 
-  const API_BASE_URL = "https://updatedbackendcc.onrender.com"
+  const API_BASE_URL = "http://localhost:5005"
   const token = localStorage.getItem("token")
 
   const config = {
@@ -745,6 +745,24 @@ const ProfileView = () => {
               <div className="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">{profile.name}</h1>
+                  {profile.email && (
+                    <div className="flex items-center mb-3">
+                      <svg
+                        className="w-4 h-4 text-indigo-600 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                        />
+                      </svg>
+                      <span className="text-indigo-700 font-medium">{profile.email}</span>
+                    </div>
+                  )}
                   <div className="flex items-center mt-1 space-x-2 flex-wrap gap-2">
                     <span className="px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-indigo-100 to-blue-100 text-indigo-800 capitalize border border-indigo-200">
                       {profile.role}
@@ -792,7 +810,7 @@ const ProfileView = () => {
                     {connectionStatus === "pending" && (
                       <button
                         disabled
-                        className="px-2 py-2 border-2 border-yellow-300 text-yellow-700 rounded-lg bg-yellow-50 font-medium"
+                        className="px-6 py-3 border-2 border-yellow-300 text-yellow-700 rounded-lg bg-yellow-50 font-medium"
                       >
                         <svg className="h-4 w-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -826,7 +844,7 @@ const ProfileView = () => {
 
                     <button
                       onClick={startConversation}
-                      className="px-2 py-2 border-2 border-indigo-300 text-indigo-700 rounded-lg hover:bg-indigo-50 transition-all duration-200 flex items-center font-medium"
+                      className="px-6 py-3 border-2 border-indigo-300 text-indigo-700 rounded-lg hover:bg-indigo-50 transition-all duration-200 flex items-center font-medium"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -882,6 +900,12 @@ const ProfileView = () => {
                   Student Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {profile.email && (
+                    <div className="bg-white/60 rounded-lg p-4">
+                      <h4 className="text-sm font-medium text-blue-600 mb-1">Email</h4>
+                      <p className="text-gray-900 font-semibold">{profile.email}</p>
+                    </div>
+                  )}
                   {profile.batch && (
                     <div className="bg-white/60 rounded-lg p-4">
                       <h4 className="text-sm font-medium text-blue-600 mb-1">Batch</h4>
@@ -911,6 +935,12 @@ const ProfileView = () => {
                   Faculty Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {profile.email && (
+                    <div className="bg-white/60 rounded-lg p-4">
+                      <h4 className="text-sm font-medium text-purple-600 mb-1">Email</h4>
+                      <p className="text-gray-900 font-semibold">{profile.email}</p>
+                    </div>
+                  )}
                   {profile.facultyId && (
                     <div className="bg-white/60 rounded-lg p-4">
                       <h4 className="text-sm font-medium text-purple-600 mb-1">Faculty ID</h4>
@@ -940,6 +970,12 @@ const ProfileView = () => {
                   Alumni Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {profile.email && (
+                    <div className="bg-white/60 rounded-lg p-4">
+                      <h4 className="text-sm font-medium text-indigo-600 mb-1">Email</h4>
+                      <p className="text-gray-900 font-semibold">{profile.email}</p>
+                    </div>
+                  )}
                   {profile.passedOutBatch && (
                     <div className="bg-white/60 rounded-lg p-4">
                       <h4 className="text-sm font-medium text-indigo-600 mb-1">Passed Out Batch</h4>
