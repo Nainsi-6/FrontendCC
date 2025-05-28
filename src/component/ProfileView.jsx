@@ -554,7 +554,7 @@ const ProfileView = () => {
     action: false,
   })
 
-  const API_BASE_URL = "http://localhost:5005"
+  const API_BASE_URL = "https://updatedbackendcc.onrender.com"
   const token = localStorage.getItem("token")
 
   const config = {
