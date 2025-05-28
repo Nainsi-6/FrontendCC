@@ -272,6 +272,85 @@
 // export default ConnectionRequest
 
 
+// "use client"
+
+// import PropTypes from "prop-types"
+// import { useNavigate } from "react-router-dom"
+// import ProfilePhoto from "./ProfilePhoto"
+
+// const ConnectionRequest = ({ request, onAccept, onReject }) => {
+//   const navigate = useNavigate()
+
+//   // Check if the request has the necessary data structure
+//   if (!request || !request.follower) {
+//     console.error("Invalid request format:", request)
+//     return null
+//   }
+
+//   const { follower } = request
+
+//   // Navigate to the follower's profile on dp click
+//   const handleDpClick = () => {
+//     if (follower._id) {
+//       navigate(`/profile/${follower._id}`)
+//     }
+//   }
+
+//   return (
+//     <div className="flex items-center justify-between p-4 bg-white rounded-lg border mb-3 shadow-sm hover:shadow-md transition-shadow">
+//       <div className="flex items-center space-x-4">
+//         <ProfilePhoto
+//           src={follower.profilePhotoUrl}
+//           alt={follower.name || "User"}
+//           size="lg"
+//           className="cursor-pointer border border-gray-200"
+//           onClick={handleDpClick}
+//         />
+//         <div>
+//           <h4 className="font-medium text-gray-900">{follower.name || "Unknown User"}</h4>
+//           <p className="text-sm text-gray-500 capitalize">
+//             {follower.role || "User"}
+//             {follower.department && ` • ${follower.department}`}
+//           </p>
+//         </div>
+//       </div>
+//       <div className="flex space-x-2">
+//         <button
+//           onClick={onReject}
+//           className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
+//         >
+//           Ignore
+//         </button>
+//         <button
+//           onClick={onAccept}
+//           className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+//         >
+//           Accept
+//         </button>
+//       </div>
+//     </div>
+//   )
+// }
+
+// ConnectionRequest.propTypes = {
+//   request: PropTypes.shape({
+//     _id: PropTypes.string.isRequired,
+//     follower: PropTypes.shape({
+//       _id: PropTypes.string,
+//       name: PropTypes.string,
+//       email: PropTypes.string,
+//       role: PropTypes.string,
+//       department: PropTypes.string,
+//       profilePhotoUrl: PropTypes.string,
+//     }).isRequired,
+//   }).isRequired,
+//   onAccept: PropTypes.func.isRequired,
+//   onReject: PropTypes.func.isRequired,
+// }
+
+// export default ConnectionRequest
+
+
 "use client"
 
 import PropTypes from "prop-types"
@@ -296,6 +375,16 @@ const ConnectionRequest = ({ request, onAccept, onReject }) => {
     }
   }
 
+  // Handle accept with callback to refresh connections modal
+  const handleAccept = () => {
+    onAccept(request._id)
+  }
+
+  // Handle reject with callback
+  const handleReject = () => {
+    onReject(request._id)
+  }
+
   return (
     <div className="flex items-center justify-between p-4 bg-white rounded-lg border mb-3 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center space-x-4">
@@ -307,7 +396,12 @@ const ConnectionRequest = ({ request, onAccept, onReject }) => {
           onClick={handleDpClick}
         />
         <div>
-          <h4 className="font-medium text-gray-900">{follower.name || "Unknown User"}</h4>
+          <h4 
+            className="font-medium text-gray-900 cursor-pointer hover:text-indigo-600"
+            onClick={handleDpClick}
+          >
+            {follower.name || "Unknown User"}
+          </h4>
           <p className="text-sm text-gray-500 capitalize">
             {follower.role || "User"}
             {follower.department && ` • ${follower.department}`}
@@ -316,13 +410,13 @@ const ConnectionRequest = ({ request, onAccept, onReject }) => {
       </div>
       <div className="flex space-x-2">
         <button
-          onClick={onReject}
+          onClick={handleReject}
           className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
         >
           Ignore
         </button>
         <button
-          onClick={onAccept}
+          onClick={handleAccept}
           className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
         >
           Accept
@@ -349,4 +443,5 @@ ConnectionRequest.propTypes = {
 }
 
 export default ConnectionRequest
+
 

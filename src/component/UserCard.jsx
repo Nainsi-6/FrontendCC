@@ -108,18 +108,20 @@ const UserCard = ({ user, onFollow, isFollowing = false, requestSent = false }) 
   const navigate = useNavigate()
   const [isHovered, setIsHovered] = useState(false)
   const [localRequestSent, setLocalRequestSent] = useState(requestSent)
-  
-  // Update local state when the prop changes
+  const [localIsFollowing, setLocalIsFollowing] = useState(isFollowing)
+
+  // Update local state when props change
   useEffect(() => {
     setLocalRequestSent(requestSent)
-  }, [requestSent])
+    setLocalIsFollowing(isFollowing)
+  }, [requestSent, isFollowing])
 
   const handleViewProfile = () => {
     navigate(`/profile/${user._id}`)
   }
 
   const handleFollow = () => {
-    if (!isFollowing && !localRequestSent) {
+    if (!localIsFollowing && !localRequestSent) {
       setLocalRequestSent(true) // Update local state immediately
       onFollow(user._id)
     }
@@ -208,7 +210,7 @@ const UserCard = ({ user, onFollow, isFollowing = false, requestSent = false }) 
           />
 
           <h3
-            className="mt-2 text-lg font-semibold text-gray-900 cursor-pointer text-center"
+            className="mt-2 text-lg font-semibold text-gray-900 cursor-pointer text-center hover:text-indigo-600 transition-colors"
             onClick={handleViewProfile}
           >
             {user.name}
@@ -234,25 +236,44 @@ const UserCard = ({ user, onFollow, isFollowing = false, requestSent = false }) 
           </p>
 
           <div className="mt-4 w-full">
-            {isFollowing ? (
+            {localIsFollowing ? (
               <button
                 disabled
-                className="w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-700 bg-gray-50 font-medium"
+                className="w-full py-2 px-4 border border-green-300 rounded-lg text-green-700 bg-green-50 font-medium flex items-center justify-center"
               >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
                 Connected
               </button>
             ) : localRequestSent ? (
               <button
                 disabled
-                className="w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-700 bg-gray-50 font-medium"
+                className="w-full py-2 px-4 border border-yellow-300 rounded-lg text-yellow-700 bg-yellow-50 font-medium flex items-center justify-center"
               >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
                 Request Sent
               </button>
             ) : (
               <button
                 onClick={handleFollow}
-                className="w-full py-2 px-4 bg-purple-400 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                className="w-full py-2 px-4 bg-purple-400 text-white rounded-lg hover:bg-purple-500 transition-colors font-medium flex items-center justify-center"
               >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                  />
+                </svg>
                 Connect
               </button>
             )}
@@ -284,6 +305,7 @@ UserCard.propTypes = {
 }
 
 export default UserCard
+
 
 
 // "use client"
