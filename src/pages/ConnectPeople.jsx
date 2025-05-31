@@ -1174,7 +1174,6 @@ import axios from "axios"
 import { toast } from "react-toastify"
 import Navbar from "../component/Navbar"
 import UserCard from "../component/UserCard"
-import { Link } from "react-router-dom";
 import ConnectionRequest from "../component/ConnectionRequest"
 import ConnectionsModal from "../component/ConnectionsModal" // Import the new ConnectionsModal component
 import {
@@ -1532,51 +1531,51 @@ const ConnectPeople = () => {
             <div className="bg-white rounded-lg shadow p-4">
               <h2 className="text-lg font-bold mb-3 text-gray-800">Quick Access</h2>
               <ul className="space-y-3 text-indigo-700 font-medium text-sm">
-  <li>
-    <Link to="/home" className="hover:underline flex items-center gap-2">
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" />
-      </svg>
-      Home
-    </Link>
-  </li>
-  <li>
-    <Link to="/connect" className="hover:underline flex items-center gap-2">
-      <UserGroupIcon className="w-5 h-5" />
-      Connect People
-    </Link>
-  </li>
-  <li>
-    <Link to="/messages" className="hover:underline flex items-center gap-2">
-      <ChatBubbleBottomCenterTextIcon className="w-5 h-5" />
-      Messaging
-    </Link>
-  </li>
-  <li>
-    <Link to="/jobs" className="hover:underline flex items-center gap-2">
-      <BriefcaseIcon className="w-5 h-5" />
-      Jobs
-    </Link>
-  </li>
-  <li>
-    <Link to="/events" className="hover:underline flex items-center gap-2">
-      <CalendarIcon className="w-5 h-5" />
-      Events
-    </Link>
-  </li>
-  <li>
-    <Link to="/profile" className="hover:underline flex items-center gap-2">
-      <UserCircleIcon className="w-5 h-5" />
-      Profile
-    </Link>
-  </li>
-  <li>
-    <Link to="/chatbot" className="hover:underline flex items-center gap-2">
-      <LifebuoyIcon className="w-5 h-5" />
-      Help
-    </Link>
-  </li>
-</ul>
+                <li>
+                  <a href="/home" className="hover:underline flex items-center gap-2">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" />
+                    </svg>
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a href="/connect" className="hover:underline flex items-center gap-2">
+                    <UserGroupIcon className="w-5 h-5" />
+                    Connect People
+                  </a>
+                </li>
+                <li>
+                  <a href="/messages" className="hover:underline flex items-center gap-2">
+                    <ChatBubbleBottomCenterTextIcon className="w-5 h-5" />
+                    Messaging
+                  </a>
+                </li>
+                <li>
+                  <a href="/jobs" className="hover:underline flex items-center gap-2">
+                    <BriefcaseIcon className="w-5 h-5" />
+                    Jobs
+                  </a>
+                </li>
+                <li>
+                  <a href="/events" className="hover:underline flex items-center gap-2">
+                    <CalendarIcon className="w-5 h-5" />
+                    Events
+                  </a>
+                </li>
+                <li>
+                  <a href="/profile" className="hover:underline flex items-center gap-2">
+                    <UserCircleIcon className="w-5 h-5" />
+                    Profile
+                  </a>
+                </li>
+                <li>
+                  <a href="/chatbot" className="hover:underline flex items-center gap-2">
+                    <LifebuoyIcon className="w-5 h-5" />
+                    Help
+                  </a>
+                </li>
+              </ul>
             </div>
             <div
               className="bg-indigo-300 text-blue-900 rounded-lg shadow p-6 italic text-base font-semibold tracking-wide select-none"
