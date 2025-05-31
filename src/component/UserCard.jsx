@@ -97,33 +97,89 @@
 
 // export default UserCard
 
-
 "use client"
 
 import { useState, useEffect } from "react"
 import PropTypes from "prop-types"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
-const UserCard = ({ user, onFollow, isFollowing = false, requestSent = false }) => {
+const UserCard = ({ user, onFollow, connectionStatus: initialConnectionStatus = "none" }) => {
   const navigate = useNavigate()
   const [isHovered, setIsHovered] = useState(false)
-  const [localRequestSent, setLocalRequestSent] = useState(requestSent)
-  const [localIsFollowing, setLocalIsFollowing] = useState(isFollowing)
+  const [connectionStatus, setConnectionStatus] = useState(initialConnectionStatus)
+  const [loading, setLoading] = useState(false)
+  
+  const API_BASE_URL = "https://updatedbackendcc.onrender.com"
+  const token = localStorage.getItem("token")
+  
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
 
-  // Update local state when props change
+  // Check connection status on component mount
   useEffect(() => {
-    setLocalRequestSent(requestSent)
-    setLocalIsFollowing(isFollowing)
-  }, [requestSent, isFollowing])
+    checkConnectionStatus()
+  }, [user._id])
+
+  // Update local state when the prop changes
+  useEffect(() => {
+    setConnectionStatus(initialConnectionStatus)
+  }, [initialConnectionStatus])
+
+  const checkConnectionStatus = async () => {
+    try {
+      // Check if current user is following this user
+      const myConnectionsResponse = await axios.get(`${API_BASE_URL}/api/users/connections`, config)
+
+      // Check if we're following this user
+      const isFollowing = myConnectionsResponse.data.following?.some(
+        (follow) => follow.following._id === user._id && follow.status === "accepted",
+      )
+
+      if (isFollowing) {
+        setConnectionStatus("connected")
+        return
+      }
+
+      // Check if we have a pending request to this user
+      const sentRequestsResponse = await axios.get(`${API_BASE_URL}/api/users/sent-requests`, config)
+      const hasPendingRequest = sentRequestsResponse.data.sentRequests?.some(
+        (request) => request.following._id === user._id,
+      )
+
+      if (hasPendingRequest) {
+        setConnectionStatus("pending")
+        return
+      }
+
+      setConnectionStatus("none")
+    } catch (error) {
+      console.error("Error checking connection status:", error)
+      setConnectionStatus("none")
+    }
+  }
 
   const handleViewProfile = () => {
     navigate(`/profile/${user._id}`)
   }
 
-  const handleFollow = () => {
-    if (!localIsFollowing && !localRequestSent) {
-      setLocalRequestSent(true) // Update local state immediately
-      onFollow(user._id)
+  const handleFollow = async () => {
+    if (connectionStatus !== "none" || loading) return
+    
+    try {
+      setLoading(true)
+      setConnectionStatus("pending") // Update local state immediately
+      await onFollow(user._id)
+      // Re-check status after the request
+      setTimeout(checkConnectionStatus, 1000)
+    } catch (error) {
+      console.error("Error sending connection request:", error)
+      setConnectionStatus("none") // Revert on error
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -139,9 +195,6 @@ const UserCard = ({ user, onFollow, isFollowing = false, requestSent = false }) 
         return "bg-gray-100 text-gray-800"
     }
   }
-
-  // Determine the API base URL
-  const API_BASE_URL = "https://updatedbackendcc.onrender.com"
 
   // Format profile photo URL correctly
   const getProfilePhotoUrl = () => {
@@ -173,6 +226,53 @@ const UserCard = ({ user, onFollow, isFollowing = false, requestSent = false }) 
     return `${API_BASE_URL}${user.coverPhotoUrl}`
   }
 
+  const renderConnectionButton = () => {
+    if (connectionStatus === "connected") {
+      return (
+        <button
+          disabled
+          className="w-full py-2 px-4 border border-green-300 rounded-lg text-green-700 bg-green-50 font-medium flex items-center justify-center"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          Connected
+        </button>
+      )
+    }
+    
+    if (connectionStatus === "pending") {
+      return (
+        <button
+          disabled
+          className="w-full py-2 px-4 border border-yellow-300 rounded-lg text-yellow-700 bg-yellow-50 font-medium flex items-center justify-center"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Request Sent
+        </button>
+      )
+    }
+    
+    return (
+      <button
+        onClick={handleFollow}
+        disabled={loading}
+        className="w-full py-2 px-4 bg-purple-400 text-white rounded-lg hover:bg-purple-500 transition-colors font-medium flex items-center justify-center disabled:opacity-50"
+      >
+        {loading ? (
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+        ) : (
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+        )}
+        Connect
+      </button>
+    )
+  }
+
   return (
     <div className="w-[280px] mb-4 p-0 self-end">
       <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
@@ -197,7 +297,7 @@ const UserCard = ({ user, onFollow, isFollowing = false, requestSent = false }) 
         </div>
 
         {/* Profile Image + Info */}
-        <div className="flex flex-col items-center px-4 -mt-10 pb-4 z-20 relative">
+        <div className="flex flex-col items-center px-4 -mt-10 pb-4 z-2 relative">
           <img
             src={getProfilePhotoUrl() || "/placeholder.svg"}
             alt={user.name}
@@ -210,7 +310,7 @@ const UserCard = ({ user, onFollow, isFollowing = false, requestSent = false }) 
           />
 
           <h3
-            className="mt-2 text-lg font-semibold text-gray-900 cursor-pointer text-center hover:text-indigo-600 transition-colors"
+            className="mt-2 text-lg font-semibold text-gray-900 cursor-pointer text-center"
             onClick={handleViewProfile}
           >
             {user.name}
@@ -236,47 +336,7 @@ const UserCard = ({ user, onFollow, isFollowing = false, requestSent = false }) 
           </p>
 
           <div className="mt-4 w-full">
-            {localIsFollowing ? (
-              <button
-                disabled
-                className="w-full py-2 px-4 border border-green-300 rounded-lg text-green-700 bg-green-50 font-medium flex items-center justify-center"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Connected
-              </button>
-            ) : localRequestSent ? (
-              <button
-                disabled
-                className="w-full py-2 px-4 border border-yellow-300 rounded-lg text-yellow-700 bg-yellow-50 font-medium flex items-center justify-center"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Request Sent
-              </button>
-            ) : (
-              <button
-                onClick={handleFollow}
-                className="w-full py-2 px-4 bg-purple-400 text-white rounded-lg hover:bg-purple-500 transition-colors font-medium flex items-center justify-center"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                  />
-                </svg>
-                Connect
-              </button>
-            )}
+            {renderConnectionButton()}
           </div>
         </div>
       </div>
@@ -300,11 +360,11 @@ UserCard.propTypes = {
     coverPhotoUrl: PropTypes.string,
   }).isRequired,
   onFollow: PropTypes.func.isRequired,
-  isFollowing: PropTypes.bool,
-  requestSent: PropTypes.bool,
+  connectionStatus: PropTypes.oneOf(["none", "pending", "connected"]),
 }
 
 export default UserCard
+
 
 
 
