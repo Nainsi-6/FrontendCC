@@ -396,10 +396,7 @@ const ConnectionRequest = ({ request, onAccept, onReject }) => {
           onClick={handleDpClick}
         />
         <div>
-          <h4 
-            className="font-medium text-gray-900 cursor-pointer hover:text-indigo-600"
-            onClick={handleDpClick}
-          >
+          <h4 className="font-medium text-gray-900 cursor-pointer hover:text-indigo-600" onClick={handleDpClick}>
             {follower.name || "Unknown User"}
           </h4>
           <p className="text-sm text-gray-500 capitalize">
@@ -443,5 +440,3 @@ ConnectionRequest.propTypes = {
 }
 
 export default ConnectionRequest
-
-

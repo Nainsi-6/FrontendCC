@@ -4,13 +4,15 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { Tab } from "@headlessui/react"
 import ProfilePhoto from "./ProfilePhoto"
+import { useNavigate } from "react-router-dom"
 
 const ConnectionsModal = ({ isOpen, onClose }) => {
+  const navigate = useNavigate()
   const [connections, setConnections] = useState({
     followers: [],
     following: [],
     pending: [],
-    sent: [] // Added state for sent requests
+    sent: [], // Added state for sent requests
   })
   const [loading, setLoading] = useState(true)
 
@@ -53,10 +55,10 @@ const ConnectionsModal = ({ isOpen, onClose }) => {
       setLoading(true)
       // Fetch connections
       const connectionsResponse = await axios.get(`${API_BASE_URL}/api/users/connections`, config)
-      
+
       // Fetch pending requests (received)
       const requestsResponse = await axios.get(`${API_BASE_URL}/api/users/requests`, config)
-      
+
       // Fetch sent requests that haven't been accepted yet
       const sentRequestsResponse = await axios.get(`${API_BASE_URL}/api/users/sent-requests`, config)
 
@@ -70,7 +72,7 @@ const ConnectionsModal = ({ isOpen, onClose }) => {
         followers: followers.filter((follow) => follow.status === "accepted"),
         following: following.filter((follow) => follow.status === "accepted"),
         pending: pendingRequests,
-        sent: sentRequests
+        sent: sentRequests,
       })
     } catch (error) {
       console.error("Error fetching connections:", error)
@@ -82,7 +84,7 @@ const ConnectionsModal = ({ isOpen, onClose }) => {
           followers: response.data.followers || [],
           following: response.data.following || [],
           pending: response.data.requests || [],
-          sent: []
+          sent: [],
         })
       } catch (fallbackError) {
         console.error("Fallback error:", fallbackError)
@@ -95,8 +97,17 @@ const ConnectionsModal = ({ isOpen, onClose }) => {
   const handleAcceptRequest = async (requestId) => {
     try {
       await axios.post(`${API_BASE_URL}/api/users/respond/${requestId}`, { action: "accept" }, config)
-      // Update connections after accepting
-      fetchConnections()
+
+      // Remove the accepted request from pending requests immediately
+      setConnections((prev) => ({
+        ...prev,
+        pending: prev.pending.filter((request) => request._id !== requestId),
+      }))
+
+      // Refresh all connections data to get updated followers/following
+      setTimeout(() => {
+        fetchConnections()
+      }, 500)
     } catch (error) {
       console.error("Error accepting request:", error)
     }
@@ -105,8 +116,17 @@ const ConnectionsModal = ({ isOpen, onClose }) => {
   const handleRejectRequest = async (requestId) => {
     try {
       await axios.post(`${API_BASE_URL}/api/users/respond/${requestId}`, { action: "reject" }, config)
+
+      // Remove the rejected request from pending requests immediately
+      setConnections((prev) => ({
+        ...prev,
+        pending: prev.pending.filter((request) => request._id !== requestId),
+      }))
+
       // Update connections after rejecting
-      fetchConnections()
+      setTimeout(() => {
+        fetchConnections()
+      }, 500)
     } catch (error) {
       console.error("Error rejecting request:", error)
     }
@@ -115,8 +135,17 @@ const ConnectionsModal = ({ isOpen, onClose }) => {
   const handleCancelRequest = async (requestId) => {
     try {
       await axios.delete(`${API_BASE_URL}/api/users/follow/${requestId}`, config)
+
+      // Remove the cancelled request from sent requests immediately
+      setConnections((prev) => ({
+        ...prev,
+        sent: prev.sent.filter((request) => request._id !== requestId),
+      }))
+
       // Update connections after canceling
-      fetchConnections()
+      setTimeout(() => {
+        fetchConnections()
+      }, 500)
     } catch (error) {
       console.error("Error canceling request:", error)
     }
@@ -198,12 +227,12 @@ const ConnectionsModal = ({ isOpen, onClose }) => {
                               <p className="text-sm text-gray-500">{user.email}</p>
                               <p className="text-xs text-gray-500 capitalize">{user.role || ""}</p>
                             </div>
-                            <a
-                              href={`/profile/${user._id}`}
+                            <button
+                              onClick={() => navigate(`/profile/${user._id}`)}
                               className="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200"
                             >
                               View Profile
-                            </a>
+                            </button>
                           </div>
                         )
                       })}
@@ -235,12 +264,12 @@ const ConnectionsModal = ({ isOpen, onClose }) => {
                               <p className="text-sm text-gray-500">{user.email}</p>
                               <p className="text-xs text-gray-500 capitalize">{user.role || ""}</p>
                             </div>
-                            <a
-                              href={`/profile/${user._id}`}
+                            <button
+                              onClick={() => navigate(`/profile/${user._id}`)}
                               className="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200"
                             >
                               View Profile
-                            </a>
+                            </button>
                           </div>
                         )
                       })}
@@ -327,12 +356,12 @@ const ConnectionsModal = ({ isOpen, onClose }) => {
                             >
                               Cancel Request
                             </button>
-                            <a
-                              href={`/profile/${request.following._id}`}
+                            <button
+                              onClick={() => navigate(`/profile/${request.following._id}`)}
                               className="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200"
                             >
                               View Profile
-                            </a>
+                            </button>
                           </div>
                         </div>
                       ))}
